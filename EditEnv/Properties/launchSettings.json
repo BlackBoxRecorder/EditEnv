@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EditEnv": {
+      "commandName": "Project",
+      "commandLineArgs": "PATH list"
+    }
+  }
+}
