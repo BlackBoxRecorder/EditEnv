@@ -1,7 +1,7 @@
 
 A command line tool to edit Edit environment variable.
 
-![](.\docs\image.png)
+![](./docs/image.png)
 
 
 ## Install
