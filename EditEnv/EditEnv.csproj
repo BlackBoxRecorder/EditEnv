@@ -1,14 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="CliFx" Version="2.3.6" />
-    </ItemGroup>
-
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>editenv</ToolCommandName>
+    <PackageId>EditEnv</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Yinnan</Authors>
+    <Description>A commandline tool to edit environment variable.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CliFx" Version="2.3.6" />
+  </ItemGroup>
 </Project>
