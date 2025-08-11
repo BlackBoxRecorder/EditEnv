@@ -113,22 +113,34 @@ namespace EditEnv
                 && e.Target == model.Target;
         }
 
-        public List<EnvModel> GetAllEnv()
+        public List<EnvModel> GetAllEnv(EnvironmentVariableTarget target)
         {
             var collection = store.GetCollection<EnvModel>();
 
-            var item = collection.AsQueryable().ToList();
+            var item = collection.AsQueryable().Where(e => e.Target == target).ToList();
 
             return item;
         }
 
-        public List<PathModel> GetAllPath()
+        public List<PathModel> GetAllPath(EnvironmentVariableTarget target)
         {
             var collection = store.GetCollection<PathModel>();
 
-            var item = collection.AsQueryable().ToList();
+            var item = collection.AsQueryable().Where(e => e.Target == target).ToList();
 
             return item;
+        }
+
+        public static async Task<string> ExportData()
+        {
+            var json = await File.ReadAllTextAsync(JSONPATH);
+
+            return json;
+        }
+
+        public static async Task ImportData(string json)
+        {
+            await File.WriteAllTextAsync(JSONPATH, json, encoding: Encoding.UTF8);
         }
     }
 
@@ -149,5 +161,12 @@ namespace EditEnv
         public required string Value { get; set; }
 
         public required EnvironmentVariableTarget Target { get; set; }
+    }
+
+    public class ImportDataModel
+    {
+        public List<EnvModel> EnvModel { get; set; } = [];
+
+        public List<PathModel> PathModel { get; set; } = [];
     }
 }

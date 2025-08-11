@@ -17,7 +17,6 @@
             }
 
             Environment.SetEnvironmentVariable(key, value, target);
-            Console.WriteLine($"Set :{key} = {value}");
         }
 
         public static string GetVariable(string key, EnvironmentVariableTarget target)
@@ -69,7 +68,8 @@
             var paths = pathVariable.Split(';');
 
             return paths.Any(path =>
-                string.Equals(
+                !string.IsNullOrEmpty(path)
+                && string.Equals(
                     Path.GetFullPath(path.Trim()),
                     Path.GetFullPath(pathToCheck.Trim()),
                     StringComparison.OrdinalIgnoreCase
@@ -98,7 +98,7 @@
         {
             var currentPath = Environment.GetEnvironmentVariable("PATH", target) ?? "";
 
-            var paths = currentPath.Split(";") ;
+            var paths = currentPath.Split(";");
 
             return [.. paths];
         }

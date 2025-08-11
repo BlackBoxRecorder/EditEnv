@@ -10,18 +10,18 @@ namespace EditEnv.Commands
         [CommandParameter(0, Description = "Action")]
         public required EnvAction EnvAction { get; init; }
 
-        [CommandParameter(1, Description = "Environment variable key")]
-        public required string Key { get; init; }
+        [CommandOption("key", 'k', Description = "Environment variable key")]
+        public string Key { get; init; } = "";
 
         [CommandOption("value", 'v', Description = "Environment variable value")]
         public string Value { get; init; } = "";
 
-        [CommandOption("target", Description = "Environment variable target")]
+        [CommandOption("target", 't', Description = "Environment variable target")]
         public EnvironmentVariableTarget Target { get; init; } = EnvironmentVariableTarget.User;
 
         public async ValueTask ExecuteAsync(IConsole console)
         {
-            if (string.IsNullOrWhiteSpace(Key))
+            if (EnvAction != EnvAction.List && string.IsNullOrWhiteSpace(Key))
             {
                 console.WriteLine("Key can not be empty.");
                 return;
@@ -47,10 +47,12 @@ namespace EditEnv.Commands
                                 Target = Target,
                             }
                         );
+                        await console.Output.WriteLineAsync($"Set: {Key} = {Value}");
+
                         break;
                     case EnvAction.Get:
                         var value = EnvHelper.GetVariable(Key, Target);
-                        await console.Output.WriteLineAsync(value);
+                        await console.Output.WriteLineAsync($"{Key} = {value}");
                         break;
                     case EnvAction.Remove:
                         EnvHelper.RemoveVariable(Key, Target);
@@ -62,10 +64,19 @@ namespace EditEnv.Commands
                                 Value = "",
                             }
                         );
+                        await console.Output.WriteLineAsync($"Removed: {Key}");
 
                         break;
                     case EnvAction.List:
-                        await console.Output.WriteLineAsync("not support");
+                        var items = Storage.Instance.GetAllEnv(Target);
+
+                        if (items != null)
+                        {
+                            foreach (var item in items)
+                            {
+                                await console.Output.WriteLineAsync($"{item.Key} : {item.Value}");
+                            }
+                        }
 
                         break;
                 }

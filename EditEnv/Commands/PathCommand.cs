@@ -13,7 +13,7 @@ namespace EditEnv.Commands
         [CommandOption("value", 'v', Description = "Directory you want add to PATH")]
         public string Value { get; init; } = "";
 
-        [CommandOption("target", Description = "Environment variable target")]
+        [CommandOption("target", 't', Description = "Environment variable target")]
         public EnvironmentVariableTarget Target { get; init; } = EnvironmentVariableTarget.User;
 
         public async ValueTask ExecuteAsync(IConsole console)
@@ -46,6 +46,8 @@ namespace EditEnv.Commands
                         await Storage.Instance.AddPath(
                             new PathModel { Target = Target, Value = Value }
                         );
+                        await console.Output.WriteLineAsync($"Added to PATH:{Value}");
+
                         break;
 
                     case PathAction.Remove:
@@ -53,14 +55,16 @@ namespace EditEnv.Commands
                         await Storage.Instance.RemovePath(
                             new PathModel { Target = Target, Value = Value }
                         );
+                        await console.Output.WriteLineAsync($"Removed from PATH: {Value}");
+
                         break;
 
                     case PathAction.List:
-                        var allPaths = EnvHelper.ListPath(Target);
+                        var allPaths = Storage.Instance.GetAllPath(Target);
 
                         foreach (var item in allPaths)
                         {
-                            console.WriteLine($"{item}");
+                            await console.Output.WriteLineAsync($"{item.Value}");
                         }
                         break;
                 }
