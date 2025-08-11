@@ -2,7 +2,7 @@
   "profiles": {
     "EditEnv": {
       "commandName": "Project",
-      "commandLineArgs": "PATH list"
+      "commandLineArgs": "set test -v 12345"
     }
   }
 }

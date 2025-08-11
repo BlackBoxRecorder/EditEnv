@@ -19,18 +19,18 @@ namespace EditEnv.Commands
         [CommandOption("target", Description = "Environment variable target")]
         public EnvironmentVariableTarget Target { get; init; } = EnvironmentVariableTarget.User;
 
-        public ValueTask ExecuteAsync(IConsole console)
+        public async ValueTask ExecuteAsync(IConsole console)
         {
             if (string.IsNullOrWhiteSpace(Key))
             {
                 console.WriteLine("Key can not be empty.");
-                return default;
+                return;
             }
 
             if (Key.Equals("PATH", StringComparison.OrdinalIgnoreCase))
             {
-                console.Error.WriteLine($"Please use the PATH command.");
-                return default;
+                await console.Error.WriteLineAsync($"Please use the PATH command.");
+                return;
             }
 
             try
@@ -39,27 +39,41 @@ namespace EditEnv.Commands
                 {
                     case EnvAction.Set:
                         EnvHelper.SetVariable(Key, Value, Target);
+                        await Storage.Instance.AddOrUpdateEnv(
+                            new EnvModel
+                            {
+                                Key = Key,
+                                Value = Value,
+                                Target = Target,
+                            }
+                        );
                         break;
                     case EnvAction.Get:
                         var value = EnvHelper.GetVariable(Key, Target);
-                        console.Output.WriteLine(value);
+                        await console.Output.WriteLineAsync(value);
                         break;
                     case EnvAction.Remove:
                         EnvHelper.RemoveVariable(Key, Target);
-                        break;
-                    case EnvAction.List:
-                        console.Output.WriteLine("not support");
+                        await Storage.Instance.RemoveEnv(
+                            new EnvModel
+                            {
+                                Key = Key,
+                                Target = Target,
+                                Value = "",
+                            }
+                        );
 
                         break;
-                    
+                    case EnvAction.List:
+                        await console.Output.WriteLineAsync("not support");
+
+                        break;
                 }
             }
             catch (Exception ex)
             {
-                console.Error.WriteLine(ex.Message);
+                await console.Error.WriteLineAsync(ex.Message);
             }
-
-            return default;
         }
     }
 }

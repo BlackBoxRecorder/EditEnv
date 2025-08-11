@@ -16,15 +16,15 @@ namespace EditEnv.Commands
         [CommandOption("target", Description = "Environment variable target")]
         public EnvironmentVariableTarget Target { get; init; } = EnvironmentVariableTarget.User;
 
-        public ValueTask ExecuteAsync(IConsole console)
+        public async ValueTask ExecuteAsync(IConsole console)
         {
             if (
                 (PathAction == PathAction.Add || PathAction == PathAction.Remove)
                 && string.IsNullOrWhiteSpace(Value)
             )
             {
-                console.WriteLine("Value can not be empty.");
-                return default;
+                await console.Output.WriteLineAsync("Value can not be empty.");
+                return;
             }
 
             if (PathAction == PathAction.Add || PathAction == PathAction.Remove)
@@ -32,8 +32,8 @@ namespace EditEnv.Commands
                 var full = Path.GetFullPath(Value);
                 if (!Directory.Exists(full))
                 {
-                    console.WriteLine($"Directory [{full}] is not exist.");
-                    return default;
+                    await console.Output.WriteLineAsync($"Directory [{full}] is not exist.");
+                    return;
                 }
             }
 
@@ -43,10 +43,16 @@ namespace EditEnv.Commands
                 {
                     case PathAction.Add:
                         EnvHelper.AddToPath(Value, Target);
+                        await Storage.Instance.AddPath(
+                            new PathModel { Target = Target, Value = Value }
+                        );
                         break;
 
                     case PathAction.Remove:
                         EnvHelper.RemoveFromPath(Value, Target);
+                        await Storage.Instance.RemovePath(
+                            new PathModel { Target = Target, Value = Value }
+                        );
                         break;
 
                     case PathAction.List:
@@ -61,10 +67,8 @@ namespace EditEnv.Commands
             }
             catch (Exception ex)
             {
-                console.Error.WriteLine(ex.Message);
+                await console.Error.WriteLineAsync(ex.Message);
             }
-
-            return default;
         }
     }
 }

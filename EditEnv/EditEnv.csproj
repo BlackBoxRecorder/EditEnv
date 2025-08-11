@@ -13,5 +13,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CliFx" Version="2.3.6" />
+    <PackageReference Include="JsonFlatFileDataStore" Version="2.4.2" />
   </ItemGroup>
 </Project>
